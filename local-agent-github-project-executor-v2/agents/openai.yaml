@@ -1,0 +1,5 @@
+interface:
+  display_name: "Local Agent GitHub Project Executor v2"
+  short_description: "Execute local work under the GitHub handoff protocol"
+  default_prompt: "Use this skill to execute a local engineering or experiment task in a GitHub handoff repository."
+
