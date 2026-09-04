@@ -146,15 +146,17 @@ The user owns project intent, sensitive authorization, and final decisions. Chat
 
 When `event_protocol` is `disabled`, unavailable, or unsupported by the current environment, continue normal local work, reporting, commits, and PR collaboration. It must never become a blocker. When it is enabled and the repository or counterpart requires an event record, follow the schema documented in the actual README/coordination documentation and validate only fields relevant to that event.
 
-For event-bearing commit messages, PR comments, handoff notes, or coordination records, these optional trailers may be appended as final lines:
+For event-bearing commit messages, PR comments, handoff notes, or coordination records, use the repository-declared trailer names. The standard template names are:
 
 ```text
-Origin: <source-system>/<source-id>
-Event: <event-id>
-Dedup: <stable-deduplication-key>
+Coordination-Origin: agent | chatgpt
+Coordination-Event-Id: <stable-event-id>
+Coordination-Caused-By: <parent-event-id>   # optional
 ```
 
-Use known identifiers, keep `Dedup` stable across retries, and never fabricate IDs. Do not duplicate trailers or place them inside quoted logs. If there is no Event Hub or event consumer, omit these trailers; their absence must not block normal work. The ordinary commit/PR/report workflow remains valid without them.
+Use known identifiers, keep `Coordination-Event-Id` stable across retries, and never fabricate IDs. `Coordination-Caused-By` links a response to the event that caused it and helps the local router prevent loops. Do not duplicate trailers or place them inside quoted logs. If there is no Event Hub or event consumer, omit these trailers; their absence must not block normal work. The ordinary commit/PR/report workflow remains valid without them.
+
+When a repository declares a local Trigger, the Agent must still treat GitHub as the only shared truth. Do not assume a push was delivered merely because a trigger exists; do not inspect or control the user's browser. A trigger may be paused, direction-disabled, or waiting for a human approval. Continue normal Git/PR reporting, and let the user-visible dashboard record delivery state.
 
 ## 8. Detailed reference routing
 
@@ -193,4 +195,3 @@ Before handing back:
 - optional coordination/event machinery was used when available and never treated as a hidden prerequisite.
 
 Report the verified outcome first, then the exact next action for the user or ChatGPT, if any.
-
