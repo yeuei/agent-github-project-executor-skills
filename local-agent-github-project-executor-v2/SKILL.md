@@ -129,6 +129,31 @@ Distinguish these states in the report: local branch/commit, remote push, GitHub
 
 ## 6. Permission boundary and blocker handling
 
+### Local Trigger authorization and Codex approvals
+
+If a local GitHub Trigger is configured to launch Codex, ask the user once to
+authorize the exact wrapper path/command and its policy (`workspace-write` plus
+`on-request`). Store that choice in the user's ignored local configuration;
+do not ask again for every new task while the command, repository, and policy
+are unchanged. Reconfirm only when any of those values changes, the config is
+missing, or the user revokes authorization. If no command is configured, leave
+the event at `needs human` rather than guessing a shell command.
+
+Keep these approval layers distinct:
+
+- Trigger Dashboard approval/automatic mode authorizes routing GitHub events
+  and (when enabled) sending a verified ChatGPT Web message.
+- Codex command/file approvals authorize the local Agent to execute a specific
+  operation. A detached `codex exec` is headless and must not be described as
+  showing a popup. For a user-visible approval box, use the app-server client
+  flow (`item/commandExecution/requestApproval` or
+  `item/fileChange/requestApproval`) and display the exact operation with
+  “allow once”, “allow for session”, and “deny” choices in the local Trigger
+  dashboard (or in the Codex client that owns the app-server session). A
+  detached Agent cannot inject a request into an unrelated Codex desktop task.
+  Never replace this with a bypass flag or imply that Dashboard auto mode
+  grants shell access.
+
 Keep these failure classes separate:
 
 - **Local Agent Git credential/access**: SSH key, token, remote URL, network, or local Git permission prevents fetch/push. Report the command, target remote, sanitized error, and the user-owned credential action needed. Do not call this a GitHub App problem.
