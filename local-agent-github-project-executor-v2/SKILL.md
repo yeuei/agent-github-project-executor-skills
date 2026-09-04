@@ -160,8 +160,10 @@ When a repository declares a local Trigger, the Agent must still treat GitHub as
 
 If the trigger reports a browser transport failure, distinguish the layers: an
 extension popup saying native host `Connected` does not prove that the CLI
-relay socket is alive. The trigger may reuse a long-lived broker session and
-repair a stale `active.json` registry, but it must surface an unresolved
+relay socket is alive. A long-running local Trigger should derive its broker
+session id stably from the configured browser/profile/conversation target so a
+daemon restart can reuse its own tab ownership. The trigger may also repair a
+stale `active.json` registry, but it must surface an unresolved
 `无法连接` state and exact ping error. Do not resend the same event or claim
 ChatGPT processed it until GitHub or the target conversation provides evidence.
 
