@@ -158,6 +158,13 @@ Use known identifiers, keep `Coordination-Event-Id` stable across retries, and n
 
 When a repository declares a local Trigger, the Agent must still treat GitHub as the only shared truth. Do not assume a push was delivered merely because a trigger exists; do not inspect or control the user's browser. A trigger may be paused, direction-disabled, or waiting for a human approval. Continue normal Git/PR reporting, and let the user-visible dashboard record delivery state.
 
+If the trigger reports a browser transport failure, distinguish the layers: an
+extension popup saying native host `Connected` does not prove that the CLI
+relay socket is alive. The trigger may reuse a long-lived broker session and
+repair a stale `active.json` registry, but it must surface an unresolved
+`无法连接` state and exact ping error. Do not resend the same event or claim
+ChatGPT processed it until GitHub or the target conversation provides evidence.
+
 ## 8. Detailed reference routing
 
 Load only the reference needed for the current decision:
