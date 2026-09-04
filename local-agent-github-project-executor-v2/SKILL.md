@@ -156,7 +156,7 @@ Coordination-Caused-By: <parent-event-id>   # optional
 
 Use known identifiers, keep `Coordination-Event-Id` stable across retries, and never fabricate IDs. `Coordination-Caused-By` links a response to the event that caused it and helps the local router prevent loops. Do not duplicate trailers or place them inside quoted logs. If there is no Event Hub or event consumer, omit these trailers; their absence must not block normal work. The ordinary commit/PR/report workflow remains valid without them.
 
-When a repository declares a local Trigger, the Agent must still treat GitHub as the only shared truth. Do not assume a push was delivered merely because a trigger exists; do not inspect or control the user's browser. A trigger may be paused, direction-disabled, or waiting for a human approval. Continue normal Git/PR reporting, and let the user-visible dashboard record delivery state.
+When a repository declares a local Trigger, the Agent must still treat GitHub as the only shared truth. Do not assume a push was delivered merely because a trigger exists; do not inspect or control the user's browser. A trigger may be paused, direction-disabled, or waiting for a human approval. Continue normal Git/PR reporting, and let the user-visible dashboard record delivery state. If the user explicitly enables the Dashboard's **自动审批模式**, the local service couples `approval_required=false` with `auto_submit=true` and drains pending approvals; do not wait for a manual Send in that mode. This is a user-selected authorization for unattended external actions, not a reason to resend an existing event.
 
 If the trigger reports a browser transport failure, distinguish the layers: an
 extension popup saying native host `Connected` does not prove that the CLI
