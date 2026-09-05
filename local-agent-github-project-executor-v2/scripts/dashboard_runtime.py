@@ -1,0 +1,39 @@
+#!/usr/bin/env python3
+"""Start, inspect, or stop a target handoff Dashboard without copying it."""
+from __future__ import annotations
+import argparse, hashlib, json, os, signal, subprocess, sys, time
+from pathlib import Path
+from urllib.error import URLError
+from urllib.request import urlopen
+
+def ident(root: Path, port: int) -> str:
+    return hashlib.sha256(f'{root.resolve()}:{port}'.encode()).hexdigest()[:16]
+def pidfile(root: Path, port: int) -> Path:
+    return Path('/tmp') / f'local-agent-dashboard-{ident(root, port)}.pid'
+def probe(port: int) -> dict:
+    base=f'http://127.0.0.1:{port}'; out={'endpoint':base,'reachable':False}
+    try:
+        with urlopen(base+'/api/status', timeout=2) as r:
+            out['reachable']=r.status==200; out['status']=json.loads(r.read().decode())
+    except (OSError, URLError, ValueError) as exc: out['error']=str(exc)
+    return out
+def main() -> int:
+    p=argparse.ArgumentParser(); p.add_argument('action', choices=('start','status','stop')); p.add_argument('--project-root',required=True,type=Path); p.add_argument('--config',type=Path); p.add_argument('--db',type=Path); p.add_argument('--port',type=int,default=8765); a=p.parse_args()
+    root=a.project_root.resolve(); config=(a.config or root/'trigger'/'config.local.json').resolve(); db=(a.db or root/'trigger'/'state.sqlite3').resolve(); pf=pidfile(root,a.port)
+    if a.action=='status': print(json.dumps({'ok':True,'project_root':str(root),'pid_file':str(pf),**probe(a.port)},ensure_ascii=False)); return 0
+    if a.action=='stop':
+        if not pf.exists(): print(json.dumps({'ok':True,'action':'not_running'})); return 0
+        try: pid=int(pf.read_text()); os.kill(pid,signal.SIGTERM); pf.unlink()
+        except (ValueError,OSError) as exc: print(json.dumps({'ok':False,'error':str(exc)})); return 1
+        print(json.dumps({'ok':True,'action':'stopped','pid':pid})); return 0
+    if probe(a.port).get('reachable'): print(json.dumps({'ok':True,'action':'already_running',**probe(a.port)},ensure_ascii=False)); return 0
+    trigger=root/'trigger'/'trigger.py'
+    if not trigger.is_file(): print(json.dumps({'ok':False,'error':f'missing runtime: {trigger}'})); return 2
+    log=Path('/tmp')/f'local-agent-dashboard-{ident(root,a.port)}.log'; cmd=[sys.executable,str(trigger),'--config',str(config),'--db',str(db),'--port',str(a.port)]
+    with log.open('ab') as stream: proc=subprocess.Popen(cmd,cwd=root,stdout=stream,stderr=subprocess.STDOUT,start_new_session=True)
+    pf.write_text(str(proc.pid)); deadline=time.time()+8
+    while time.time()<deadline:
+        if probe(a.port).get('reachable'): print(json.dumps({'ok':True,'action':'started','pid':proc.pid,'log':str(log)},ensure_ascii=False)); return 0
+        time.sleep(.2)
+    print(json.dumps({'ok':False,'action':'start_failed','pid':proc.pid,'log':str(log),**probe(a.port)},ensure_ascii=False)); return 1
+if __name__=='__main__': raise SystemExit(main())

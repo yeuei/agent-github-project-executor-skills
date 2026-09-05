@@ -49,6 +49,17 @@ Do not create a fictional `coordination/PR-1/` or any other PR directory. After 
 
 The local Agent is primarily the local engineering executor, code implementer, experiment runner, runtime observer, evidence collector, ordinary engineering problem solver, GitHub-state synchronizer, and blocker minimizer/reporter. The Agent is not the final research-method decision maker and must not guess user intent or rely on an unwritten ChatGPT conversation.
 
+### Dashboard runtime sub-capability
+
+This skill is the installation, scheduling, and observability entry point for a
+target handoff repository's Dashboard. It does not copy or own project runtime
+code or state. Read `references/dashboard-runtime.md`, discover the active
+handoff root from the current task/README, then use
+`scripts/dashboard_runtime.py` for `start`, `status`, `stop`, or restart.
+Health checks must verify `/api/status` and the target repository identity, not
+just process existence. Keep `workspace-write` with `on-request` approvals and
+never use bypass flags. Do not print binding tokens or private event content.
+
 For every task, keep the local project and its handoff state coherent:
 
 - Read `任务.md` (or the repository's clearly designated task file) and convert it into concrete acceptance checks.
