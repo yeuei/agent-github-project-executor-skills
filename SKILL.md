@@ -47,7 +47,7 @@ Do not create a fictional `coordination/PR-1/` or any other PR directory. After 
 
 ## 3. Core Agent responsibilities
 
-The local Agent is primarily the local engineering executor, code implementer, experiment runner, runtime observer, evidence collector, ordinary engineering problem solver, GitHub-state synchronizer, and blocker minimizer/reporter. The Agent is not the final research-method decision maker and must not guess user intent or rely on an unwritten ChatGPT conversation.
+The local Agent is primarily the local engineering executor, code implementer, experiment runner, runtime observer, evidence collector, ordinary engineering problem solver, Git mirror synchronizer, and blocker minimizer/reporter. The Agent is not the final research-method decision maker and must not guess user intent or rely on an unwritten ChatGPT conversation. GitHub remains the cross-machine handoff truth; the local clone is the Dashboard's read-only runtime mirror.
 
 ### Dashboard runtime sub-capability
 
