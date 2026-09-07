@@ -128,7 +128,7 @@ The current GitHub task and current canonical specifications define behavior. Ol
 Track the work from the current repository state through review:
 
 1. Identify the target branch and any existing task branch or PR. Do not fork the same work into a new branch without a reason.
-2. Make focused changes and run proportionate validation. Commit coherent units with meaningful messages and include the evidence needed to understand them.
+2. Make focused changes and run proportionate validation. Commit coherent units with meaningful messages and include the evidence needed to understand them. Every PR title and meaningful commit subject must use `中文标题（English technical title）`; both halves must be specific and semantically equivalent. Do not submit English-only or unrelated generic titles. Preserve protocol trailers below the subject as usual.
 3. Push only when the available credential and task scope authorize it. Verify the pushed commit and branch; do not infer that a push succeeded from an attempted command.
 4. Create or update the real PR through the available GitHub path. If the Agent cannot create or inspect it, leave exact local evidence and tell ChatGPT/user what remains to be done.
 5. Respond to review comments by updating code, tests, evidence, and `agent汇报.md`; re-check the PR diff and status after each review cycle.

@@ -119,7 +119,11 @@ Git history is the archive.
 
 ---
 
-## 7. Push checklist
+## 7. Title and commit naming
+
+Use `中文标题（English technical title）` for every PR title and meaningful commit subject. Keep both halves semantically equivalent and specific to the actual change. Do not use English-only or generic unrelated titles. This rule applies to the title/subject line; trailers and code identifiers remain unchanged.
+
+## 8. Push checklist
 
 Before a meaningful push:
 
@@ -130,7 +134,7 @@ Before a meaningful push:
 - no unnecessary run caches or huge artifacts are included;
 - obsolete coordination versions are not added.
 
-## 8. Verify lifecycle states separately
+## 9. Verify lifecycle states separately
 
 Report these independently:
 
@@ -140,7 +144,7 @@ local branch/commit → remote push → GitHub PR → review state → merge sta
 
 An attempted push is not a verified push, and “ready for merge review” is not merged. If ChatGPT cannot access the repository through its GitHub App, record that separately from local Git access and recommend <https://github.com/settings/installations>.
 
-## 9. Optional event trailers
+## 10. Optional event trailers
 
 When the repository/counterpart uses event-bearing messages, optional final-line trailers are:
 
@@ -151,4 +155,3 @@ Dedup: <stable-deduplication-key>
 ```
 
 Use known IDs and a stable deduplication key; never fabricate or duplicate them. Without an Event Hub or event consumer, omit the trailers and continue normally. Missing trailers or a disabled `event_protocol` must not block work.
-
