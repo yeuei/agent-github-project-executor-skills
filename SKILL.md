@@ -60,6 +60,22 @@ Health checks must verify `/api/status` and the target repository identity, not
 just process existence. Keep `workspace-write` with `on-request` approvals and
 never use bypass flags. Do not print binding tokens or private event content.
 
+### Persistent Codex-thread continuation
+
+When a handoff needs a local, event-driven Codex Agent without relying on a
+scheduled ChatGPT/Codex heartbeat, use a small local monitor plus `codex
+app-server`. The monitor may observe a Dashboard-owned local signal, then
+resume a user-selected durable Codex thread and start one bounded turn. Read
+[the thread-continuation reference](references/codex-thread-continuation.md)
+before implementing or operating this route.
+
+This route is for `kind=codex` threads on the same local Codex installation.
+It must not treat a ChatGPT Web conversation ID as a Codex thread ID, and it
+must not inject into an unrelated active user conversation. A thread selected
+by the user, or a dedicated non-ephemeral local-agent thread created for this
+route, is the valid target. The Dashboard only records the requested action;
+the external monitor owns the subsequent `thread/resume` and `turn/start`.
+
 For every task, keep the local project and its handoff state coherent:
 
 - Read `任务.md` (or the repository's clearly designated task file) and convert it into concrete acceptance checks.
