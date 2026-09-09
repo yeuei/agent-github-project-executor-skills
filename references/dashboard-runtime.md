@@ -19,15 +19,17 @@ python scripts/dashboard_runtime.py status --project-root /absolute/path/to/hand
 python scripts/dashboard_runtime.py stop --project-root /absolute/path/to/handoff
 ```
 
-`start` is idempotent and waits for the localhost endpoint. `status` probes
-`/api/status`, reports reachability and recorded process identity, and must be
-checked against the returned repository path. Restart means `stop`, `start`,
-then `status`.
+`start` is idempotent and waits for the localhost endpoint. When the target
+repository provides `trigger/codex-thread-monitor.py`, it also starts that
+separate local monitor. `status` probes `/api/status`, reports reachability,
+the recorded Dashboard process identity, and the recorded monitor PID; check
+the returned repository path before acting. Restart means `stop`, `start`, then
+`status`.
 
 If the port is occupied, inspect the status payload and use an explicit
 alternate `--port`; never kill an unknown process. On failure preserve the
-`/tmp` log path and exact error. `stop` only terminates the PID recorded by the
-launcher.
+`/tmp` log path and exact error. `stop` only terminates Dashboard and monitor
+PIDs recorded by the launcher.
 
 ## Runtime/API boundary
 
